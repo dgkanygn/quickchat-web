@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import Data from "../context/Data";
 
+import { Oval } from "react-loader-spinner";
+
 import { nanoid } from "nanoid";
 
 export const Login = ({ socket }) => {
@@ -28,6 +30,10 @@ export const Login = ({ socket }) => {
   const [activeTab, setActiveTab] = useState(1);
   const [alert, setAlert] = useState(true);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  // console.log(isLoading);
+
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
@@ -35,10 +41,13 @@ export const Login = ({ socket }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (activeTab === 1) {
+      setIsLoading(true);
       socket.emit("join", { roomId, username, isSetUp: false }, (result) => {
         result.isValid ? setIsLogin(result.isValid) : setAlert(result.isValid);
+        setIsLoading(false);
       });
     } else {
+      setIsLoading(true);
       const randomCode = nanoid(7);
       setRoomId(randomCode);
       socket.emit(
@@ -46,6 +55,7 @@ export const Login = ({ socket }) => {
         { roomId: randomCode, username, isSetUp: true },
         (result) => {
           setIsLogin(result.isValid);
+          setIsLoading(false);
         }
       );
     }
@@ -109,7 +119,17 @@ export const Login = ({ socket }) => {
                 {!alert && <p>Girdiğin kod geçersiz.</p>}
                 <div>
                   <button className="bg-blue5 flex items-center justify-center rounded p-[14px] text-white">
-                    Bağlan
+                    {isLoading ? (
+                      <Oval
+                        height={20}
+                        width={20}
+                        color="white"
+                        secondaryColor="lightblue"
+                        strokeWidth={5}
+                      />
+                    ) : (
+                      "Bağlan"
+                    )}
                   </button>
                 </div>
               </form>
@@ -136,7 +156,17 @@ export const Login = ({ socket }) => {
 
                 <div>
                   <button className="bg-blue5 flex items-center justify-center rounded p-[14px] text-white">
-                    Kur
+                    {isLoading ? (
+                      <Oval
+                        height={20}
+                        width={20}
+                        color="white"
+                        secondaryColor="lightblue"
+                        strokeWidth={5}
+                      />
+                    ) : (
+                      "Kur"
+                    )}
                   </button>
                 </div>
               </form>
